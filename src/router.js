@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Login from "./components/Login";
 import Home from "./components/Home";
 import TestPosition from "./components/TestPosition";
 import EditPassword from "./components/setting/EditPassword";
@@ -8,9 +9,12 @@ import AdminLog from "./components/log/AdminLog";
 import SignInOutLog from "./components/log/SignInOutLog";
 Vue.use(VueRouter)
 
-const routes = [
+const routes = [{
+        path: "/login",
+        component: Login
+    },
     {
-        path:"/home",
+        path: "/home",
         component: Home
     },
     {
@@ -35,7 +39,7 @@ const routes = [
     }
 ]
 
-var router =  new VueRouter({
+var router = new VueRouter({
     routes
 })
 export default router;
