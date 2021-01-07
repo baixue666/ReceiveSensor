@@ -21,7 +21,7 @@
 <el-submenu :index="indexPositionMenu[index].parantIndex" class="aside-submenu" v-for="(item,index) in positionMenu" :key="index">
     <template slot="title">{{item.position}}</template>
     <el-menu-item :index="indexPositionMenu[index].childIndexList[InnerIndex].index" v-for="(innerItem,InnerIndex) in item.names" :key="InnerIndex">
-        <router-link :to="`/testPosition?code=`+innerItem.code">{{innerItem.name}}</router-link>
+        <router-link :to="`/testPosition?code=`+innerItem.code+`&position=`+item.position">{{innerItem.name}}</router-link>
     </el-menu-item>
 </el-submenu>
 </el-submenu>

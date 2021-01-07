@@ -311,7 +311,9 @@
                 if (typeof pageSize == "undefined") pageIndex = 50;
                 var param = {
                     pageIndex: pageIndex,
-                    pageSize: pageSize
+                    pageSize: pageSize,
+                    position: decodeURI(this.getUrlQueryValue('position')),
+                    code: this.getUrlQueryValue('code'),
                 };
                 if (typeof startDate != "undefined" && typeof endDate != "undefined") {
                     param.start_time = startDate;
@@ -356,6 +358,21 @@
                 }    
                 return  "";
             },
+            getUrlQueryValue(paras) {
+                var url = location.href;
+                var paraString = url.substring(url.indexOf("?") + 1, url.length).split("&");
+                var paraObj = {}
+                for (var i = 0; i < paraString.length; i++) {
+                    var j = paraString[i];
+                    paraObj[j.substring(0, j.indexOf("=")).toLowerCase()] = j.substring(j.indexOf("=") + 1, j.length);
+                }
+                var returnValue = paraObj[paras.toLowerCase()];
+                if (typeof(returnValue) == "undefined") {
+                    return "";
+                } else {
+                    return returnValue;
+                }
+            }
 
         }
     };

@@ -211,7 +211,8 @@
             fourNum: 0,
             fiveNum: 0,
             positions: [],
-            indexData: []
+            indexData: [],
+            timer: null
 
         }),
         mounted() {
@@ -224,7 +225,7 @@
                 BMap,
                 map
             }) {
-                let me = this;
+                let that = this;
                 //console.log(BMap, map)
 
                 // 初始化地图,设置中心点坐标和地图级别
@@ -237,14 +238,20 @@
                 map.addControl(new BMap.MapTypeControl({
                     mapTypes: [BMAP_NORMAL_MAP, BMAP_HYBRID_MAP]
                 }));
+                clearInterval(this.timer);
+                this.timer = setInterval(function() {
+                    if (that.positions.length > 0) {
+                        clearInterval(that.timer);
+                        // 创建点标记 & 添加点标记
+                        for (var i = 0; i < that.positions.length; i++) {
+                            // 创建点标记
+                            var maker = new BMap.Marker(new BMap.Point(that.positions[i].lng, that.positions[i].lat));
+                            // 在地图上添加点标记
+                            map.addOverlay(maker);
+                        }
+                    }
+                }, 300)
 
-                // 创建点标记 & 添加点标记
-                for (var i = 0; i < this.positions.length; i++) {
-                    // 创建点标记
-                    var maker = new BMap.Marker(new BMap.Point(this.positions[i].lng, this.positions[i].lat));
-                    // 在地图上添加点标记
-                    map.addOverlay(maker);
-                }
             },
             positionList() {
                 var that = this;
