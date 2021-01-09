@@ -16,5 +16,10 @@ Vue.prototype.$echarts = echarts;
 Vue.prototype.$axios = axios
 new Vue({
     router,
+    data: function() {
+        return {
+            displayLogin: false
+        }
+    },
     render: h => h(App)
 }).$mount("#app")

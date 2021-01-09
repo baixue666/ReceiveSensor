@@ -135,13 +135,22 @@
                         if (response.data.code == 0 && response.data.message == "success") {
                             that.userToken = response.data.result
                             that.setCookie("Authorization_usertoken", that.userToken);
-                            that.$emit('showLogin');
+                            that.$root.displayLogin = false;
+                            that.$router.push('/home')
                         } else {
-                            alert("账户或密码不正确，请重新输入再登录")
+                            that.$message({
+                                showClose: true,
+                                message: '账户或密码不正确，请重新输入再登录',
+                                type: 'warning'
+                            });
                         }
                     })
                     .catch(function(error) { // 请求失败处理
-                        alert("请求超时，请稍后再重新登录")
+                        that.$message({
+                            showClose: true,
+                            message: error,
+                            type: 'error'
+                        });
                         console.log(error);
                     });
 

@@ -1,8 +1,7 @@
 <template>
   <div id="app">
-    <Login v-if="displayLogin" 
-           @showLogin="showLogin"/>
-    <Content v-else/>
+    <Login v-if="$root.displayLogin"/>
+    <Content v-else />
   </div>
 </template>
 
@@ -17,17 +16,14 @@
         data() {
             return {
                 Authorization_usertoken: "",
-                displayLogin: false
-
             }
         },
         mounted() {
-            //debugger;
             this.Authorization_usertoken = this.getCookie("Authorization_usertoken");
             if (this.Authorization_usertoken == "") {
-                this.displayLogin = true;
+                this.$root.displayLogin = true;
             } else {
-                this.displayLogin = false;
+                this.$root.displayLogin = false;
             }
         },
         methods: {
@@ -41,11 +37,7 @@
                     }    
                 }    
                 return  "";
-            },
-            showLogin() {
-                this.displayLogin = false;
             }
-
         }
     }
 </script>

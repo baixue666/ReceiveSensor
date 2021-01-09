@@ -176,13 +176,14 @@
                 //console.log(`每页 ${val} 条`);
                 var that = this;
                 this.pageSize = val;
-                this.positionList(1, val);
+                this.currentPage = 1;
+                this.positionList(this.currentPage, this.pageSize);
             },
             handleCurrentChange(val) {
                 //console.log(`当前页: ${val}`);
                 var that = this;
                 this.currentPage = val;
-                this.indexList(val, this.pageSize);
+                this.indexList(this.currentPage, this.pageSize);
             },
             changeSwitch(row) {
                 var curData = {
@@ -232,13 +233,25 @@
                             that.total = response.data.count;
 
                         } else if (response.data.code == 401 && response.data.message == "authorize_fault") {
-                            alert("没有权限，请先登录")
+                            if (that.$route.path !== '/login') {
+                                that.$router.push('/login')
+                            }
+                            that.$root.displayLogin = true;
+                            that.setCookie("Authorization_usertoken", "");
                         } else {
-                            alert("请稍后再试")
+                            that.$message({
+                                showClose: true,
+                                message: response.data.message,
+                                type: 'warning'
+                            });
                         }
                     })
                     .catch(function(error) { // 请求失败处理
-                        alert("请求超时，请稍后再重新登录")
+                        that.$message({
+                            showClose: true,
+                            message: error,
+                            type: 'error'
+                        });
                         console.log(error);
                     });
 
@@ -254,18 +267,33 @@
                     .then(function(response) {
                         if (response.data.code == 0 && response.data.message == "success") {
                             that.$message({
+                                showClose: true,
                                 type: 'success',
                                 message: '修改成功!'
                             });
                             if (callback) {
                                 callback.call(that);
                             }
+                        } else if (response.data.code == 401 && response.data.message == "authorize_fault") {
+                            if (that.$route.path !== '/login') {
+                                that.$router.push('/login')
+                            }
+                            that.$root.displayLogin = true;
+                            that.setCookie("Authorization_usertoken", "");
                         } else {
-                            alert("没有权限，请先登录")
+                            that.$message({
+                                showClose: true,
+                                message: response.data.message,
+                                type: 'warning'
+                            });
                         }
                     })
                     .catch(function(error) { // 请求失败处理
-                        alert("请求超时，请稍后再重新登录")
+                        that.$message({
+                            showClose: true,
+                            message: error,
+                            type: 'error'
+                        });
                         console.log(error);
                     });
 

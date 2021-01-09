@@ -11,31 +11,37 @@ Vue.use(VueRouter)
 
 const routes = [{
         path: "/login",
-        component: Login
+        component: Login,
     },
     {
         path: "/home",
-        component: Home
+        component: Home,
+        name: ["首页"],
     },
     {
         path: "/testPosition",
-        component: TestPosition
+        component: TestPosition,
+        name: ["中国铁道科学研究院铁道建筑研究所"],
     },
     {
         path: "/setting/editPassword",
-        component: EditPassword
+        component: EditPassword,
+        name: ["设置", "修改密码"],
     },
     {
         path: "/setting/nodePosition",
-        component: NodePosition
+        component: NodePosition,
+        name: ["设置", "节点位置"],
     },
     {
         path: "/log/adminLog",
-        component: AdminLog
+        component: AdminLog,
+        name: ["日志管理", "管理员日志"],
     },
     {
         path: "/log/signInOutLog",
-        component: SignInOutLog
+        component: SignInOutLog,
+        name: ["日志管理", "登陆登出日志"],
     }
 ]
 

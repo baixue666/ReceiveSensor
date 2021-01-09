@@ -145,7 +145,8 @@
                 //console.log(`每页 ${val} 条`);
                 var that = this;
                 this.pageSize = val;
-                this.indexList(1, val, function(data) {
+                this.currentPage = 1;
+                this.indexList(this.currentPage, this.pageSize, function(data) {
                     that.topTenTableData = data;
                 })
             },
@@ -153,19 +154,18 @@
                 //console.log(`当前页: ${val}`);
                 var that = this;
                 this.currentPage = val;
-                this.indexList(val, this.pageSize, function(data) {
+                this.indexList(this.currentPage, this.pageSize, function(data) {
                     that.topTenTableData = data;
                 })
             },
             initCharts(echartData, type) {　
-                let myChart = this.$echarts.init(this.$refs.chart);　　 //console.log(this.$refs.chart)
-                //if (typeof echartData == "undefined" || echartData.length == 0) return;
+                let myChart = this.$echarts.init(this.$refs.chart);
                 this.echartData = echartData;
-                this.topTenTableData = this.echartData.splice(0, 10)
                 var dataX = [],
                     dataY = [],
                     dataZ = [];
                 if (typeof type == "undefined" || type == "加速度") {
+                    if (typeof type == "undefined") this.topTenTableData = this.echartData.slice(0, 10);
                     for (var i = 0; i < this.echartData.length; i++) {
                         dataX.push([this.echartData[i].create_time, this.echartData[i].G_X]);
                         dataY.push([this.echartData[i].create_time, this.echartData[i].G_Y]);
@@ -312,8 +312,8 @@
                 var param = {
                     pageIndex: pageIndex,
                     pageSize: pageSize,
-                    position: decodeURI(this.getUrlQueryValue('position')),
-                    code: this.getUrlQueryValue('code'),
+                    position: this.$route.query.position,
+                    code: this.$route.query.code,
                 };
                 if (typeof startDate != "undefined" && typeof endDate != "undefined") {
                     param.start_time = startDate;
@@ -333,13 +333,25 @@
                                 callback.call(that, response.data.result)
                             };
                         } else if (response.data.code == 401 && response.data.message == "authorize_fault") {
-                            alert("没有权限，请先登录")
+                            if (that.$route.path !== '/login') {
+                                that.$router.push('/login')
+                            }
+                            that.$root.displayLogin = true;
+                            that.setCookie("Authorization_usertoken", "");
                         } else {
-                            alert("请稍后再试")
+                            that.$message({
+                                showClose: true,
+                                message: response.data.message,
+                                type: 'warning'
+                            });
                         }
                     })
                     .catch(function(error) { // 请求失败处理
-                        alert("请求超时，请稍后再重新登录")
+                        that.$message({
+                            showClose: true,
+                            message: error,
+                            type: 'error'
+                        });
                         console.log(error);
                     });
 

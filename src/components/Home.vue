@@ -70,6 +70,7 @@
         position: absolute;
         top: 80px;
         left: 50px;
+        /* left: 250px; */
         z-index: 99;
     }
     
@@ -308,13 +309,25 @@
 
 
                         } else if (response.data.code == 401 && response.data.message == "authorize_fault") {
-                            alert("没有权限，请先登录")
+                            if (that.$route.path !== '/login') {
+                                that.$router.push('/login')
+                            }
+                            that.$root.displayLogin = true;
+                            that.setCookie("Authorization_usertoken", "");
                         } else {
-                            alert("请稍后再试")
+                            that.$message({
+                                showClose: true,
+                                message: response.data.message,
+                                type: 'warning'
+                            });
                         }
                     })
                     .catch(function(error) { // 请求失败处理
-                        alert("请求超时，请稍后再重新登录")
+                        that.$message({
+                            showClose: true,
+                            message: error,
+                            type: 'error'
+                        });
                         console.log(error);
                     });
 
@@ -336,13 +349,25 @@
                             that.indexData = response.data.result
 
                         } else if (response.data.code == 401 && response.data.message == "authorize_fault") {
-                            alert("没有权限，请先登录")
+                            if (that.$route.path !== '/login') {
+                                that.$router.push('/login')
+                            }
+                            that.$root.displayLogin = true;
+                            that.setCookie("Authorization_usertoken", "");
                         } else {
-                            alert("请稍后再试")
+                            that.$message({
+                                showClose: true,
+                                message: response.data.message,
+                                type: 'warning'
+                            });
                         }
                     })
                     .catch(function(error) { // 请求失败处理
-                        alert("请求超时，请稍后再重新登录")
+                        that.$message({
+                            showClose: true,
+                            message: error,
+                            type: 'error'
+                        });
                         console.log(error);
                     });
 

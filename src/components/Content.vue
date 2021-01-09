@@ -1,17 +1,21 @@
 <template>
 <el-container style="height: 100vh;">
-  <el-aside class="aside-menu-contaniner">
+  
     <el-menu
-      default-active="1"
+      :default-active="activeIndex"
       class="aside-menu"
+      ref="asideMenu"
       @open="handleOpen"
       @close="handleClose"
       background-color="#001529"
+      width="210px"
       text-color="#fff"
-      active-text-color="#409eff">
-      <el-menu-item index="1">
+      active-text-color="#409eff"
+      :collapse="isCollapse"
+      :unique-opened="true">
+      <el-menu-item index="1" @click="changePath('home')">
         <i class="el-icon-odometer"></i>
-        <span slot="title"><router-link to="/home">首页</router-link></span>
+        <span slot="title">首页</span>
       </el-menu-item>
       <el-submenu index="2"> 
         <template slot="title" class="aside-submenu"> 
@@ -20,8 +24,9 @@
         </template>
 <el-submenu :index="indexPositionMenu[index].parantIndex" class="aside-submenu" v-for="(item,index) in positionMenu" :key="index">
     <template slot="title">{{item.position}}</template>
-    <el-menu-item :index="indexPositionMenu[index].childIndexList[InnerIndex].index" v-for="(innerItem,InnerIndex) in item.names" :key="InnerIndex">
-        <router-link :to="`/testPosition?code=`+innerItem.code+`&position=`+item.position">{{innerItem.name}}</router-link>
+    <!-- <span slot="title">{{item.position}}</span> -->
+    <el-menu-item :index="indexPositionMenu[index].childIndexList[InnerIndex].index" v-for="(innerItem,InnerIndex) in item.names" :key="InnerIndex" @click="changePath('testPosition',innerItem.code,innerItem.name,item.position)">
+        {{innerItem.name}}
     </el-menu-item>
 </el-submenu>
 </el-submenu>
@@ -31,11 +36,11 @@
                 <span>设置</span>
               </template>
     <el-menu-item-group class="aside-submenu">
-        <el-menu-item index="3-1">
-            <router-link to="/setting/editPassword">修改密码</router-link>
+        <el-menu-item index="3-1" @click="changePath('editPassword')">
+            <span>修改密码</span>
         </el-menu-item>
-        <el-menu-item index="3-2">
-            <router-link to="/setting/nodePosition">节点位置</router-link>
+        <el-menu-item index="3-2" @click="changePath('nodePosition')">
+            <span>节点位置</span>
         </el-menu-item>
     </el-menu-item-group>
 </el-submenu>
@@ -45,34 +50,42 @@
                 <span>日志管理</span>
               </template>
     <el-menu-item-group class="aside-submenu">
-        <el-menu-item index="4-1">
-            <router-link to="/log/adminLog">管理员日志</router-link>
+        <el-menu-item index="4-1" @click="changePath('adminLog')">
+            <span>管理员日志</span>
         </el-menu-item>
-        <el-menu-item index="4-2">
-            <router-link to="/log/signInOutLog">登陆登出日志</router-link>
+        <el-menu-item index="4-2" @click="changePath('signInOutLog')">
+            <span>登陆登出日志</span>
         </el-menu-item>
     </el-menu-item-group>
 </el-submenu>
 </el-menu>
-</el-aside>
+
 
 <el-container>
     <el-header style="text-align: right; font-size: 12px;height:50px">
-        <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-        </el-breadcrumb>
+        <div class="header-left">
+            <i :class="isCollapse?'el-icon-s-unfold':'el-icon-s-fold'" @click="isCollapse=!isCollapse"></i>
+            <!-- <i :class="el-icon-s-unfold"></i> -->
+            <el-breadcrumb separator="/">
+                <el-breadcrumb-item v-for="(item,index) in $route.name">{{item}}</el-breadcrumb-item>
+            </el-breadcrumb>
+        </div>
+
+
+        <el-dropdown trigger="click" @command="handleCommand">
+            <div>
+                <el-avatar icon="el-icon-user-solid" type="primary"></el-avatar>
+                <i class="el-icon-arrow-down el-icon--right"></i>
+            </div>
+            <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="editPassword">修改密码</el-dropdown-item>
+                <el-dropdown-item command="logout">退出</el-dropdown-item>
+            </el-dropdown-menu>
+        </el-dropdown>
     </el-header>
 
     <el-main>
         <router-view></router-view>
-        <!-- <el-table :data="tableData">
-        <el-table-column prop="date" label="日期" width="140">
-        </el-table-column>
-        <el-table-column prop="name" label="姓名" width="120">
-        </el-table-column>
-        <el-table-column prop="address" label="地址">
-        </el-table-column>
-      </el-table> -->
     </el-main>
 </el-container>
 </el-container>
@@ -101,12 +114,21 @@
         padding: 0;
     }
     
-    .aside-menu-contaniner {
-        width: 210px!important;
-        background-color: #001529;
+    .el-menu {
+        width: 210px;
         height: 100%;
         overflow: hidden;
         overflow-y: auto;
+        transition: .1s;
+    }
+    
+    .el-menu.el-menu--collapse {
+        width: 64px;
+        transition: .1s;
+    }
+    
+    .el-menu .el-menu {
+        overflow: hidden;
     }
     
     .aside-submenu,
@@ -120,13 +142,10 @@
         color: #303133;
         padding: 0 20px;
         cursor: pointer;
-        -webkit-transition: border-color .3s, background-color .3s, color .3s;
-        transition: border-color .3s, background-color .3s, color .3s;
-        -webkit-box-sizing: border-box;
         box-sizing: border-box;
     }
     
-    .aside-menu-contaniner span {
+    .aside-menu span {
         width: 120px;
         display: inline-block;
         overflow: hidden;
@@ -136,7 +155,11 @@
         font-weight: 300;
     }
     
-    .aside-menu-contaniner a {
+    .el-menu {
+        border-right: none;
+    }
+    
+    .aside-menu a {
         text-decoration: none;
         color: rgb(191, 203, 217);
     }
@@ -150,35 +173,139 @@
         margin: 20px;
         background: #fff;
     }
+    
+    .el-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .el-header .el-dropdown-selfdefine {
+        display: flex;
+        align-items: center;
+    }
+    
+    .el-dropdown {
+        cursor: pointer;
+    }
+    
+    .el-avatar {
+        background: rgb(35, 163, 248);
+    }
+    
+    .header-left {
+        display: flex;
+        align-items: center;
+    }
+    
+    .header-left i {
+        margin-right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
 </style>
 
 <script>
     export default {
         data() {
-            const item = {
-                date: '2016-05-02',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-            };
             return {
-                tableData: Array(20).fill(item),
                 Authorization_usertoken: "",
                 positionMenu: [],
-                indexPositionMenu: []
+                indexPositionMenu: [],
+                isCollapse: false,
+                activeIndex: "1"
             }
         },
         mounted() {
             this.Authorization_usertoken = this.getCookie("Authorization_usertoken");
             this.indexPositionMenu = [];
             this.getPositionMenu();
+        },
+        watch: {
+            isCollapse: {
+                handler(newVal) {
+                    if (newVal) {
+                        //debugger;
+                        //this.$refs.asideMenu.width = "64px!important";
+                        //this.$refs.asideMenu.$el.style.width = "64px!important";
+                    } else {
+                        //this.$refs.asideMenu.width = "210px!important";
+                        //this.$refs.asideMenu.$el.style.width = "210px!important";
+                    }
+
+                },
+                deep: true
+            }
 
         },
         methods: {
+            changePath(path, code, name, position) {
+                if (path == 'home') {
+                    if (this.$route.path !== '/home') {
+                        this.$router.push('/home')
+                    }
+                }
+                if (path == 'testPosition') {
+                    var positionPath = '/testPosition?code=' + code + '&position=' + position + '&name=' + name;
+                    if (this.$route.path !== '/testPosition') {
+                        this.$router.push(positionPath);
+
+                    } else {
+                        if (this.$route.query.code !== code) {
+                            // this.$route.query.code = code;
+                            // this.$route.query.position = position;
+                            this.$router.push({
+                                path: '/testPosition',
+                                query: {
+                                    code: code,
+                                    position: position
+                                }
+                            });
+                        }
+                    }
+                    this.$route.name[1] = position;
+                    this.$route.name[2] = name;
+                }
+                if (path == 'editPassword') {
+                    if (this.$route.path !== '/setting/editPassword') {
+                        this.$router.push('/setting/editPassword')
+                    }
+                }
+                if (path == 'nodePosition') {
+                    if (this.$route.path !== '/setting/nodePosition') {
+                        this.$router.push('/setting/nodePosition')
+                    }
+                }
+                if (path == 'adminLog') {
+                    if (this.$route.path !== '/log/adminLog') {
+                        this.$router.push('/log/adminLog')
+                    }
+                }
+                if (path == 'signInOutLog') {
+                    if (this.$route.path !== '/log/signInOutLog') {
+                        this.$router.push('/log/signInOutLog');
+                    }
+                }
+                //debugger;
+
+
+            },
+            handleCommand(command) {
+                if (command == "editPassword") {
+                    this.$router.push('/setting/editPassword')
+                }
+                if (command == "logout") {
+                    this.$router.push('/login')
+                    this.$root.displayLogin = true;
+                    this.setCookie("Authorization_usertoken", "");
+                }
+            },
             handleOpen(key, keyPath) {
-                console.log(key, keyPath);
+                //console.log(key, keyPath);
+                //debugger;
             },
             handleClose(key, keyPath) {
-                console.log(key, keyPath);
+                //console.log(key, keyPath);
             },
             getPositionMenu() {
                 var that = this;
@@ -203,15 +330,57 @@
                                 }
 
                             }
+
+                            if (that.$route.path == '/testPosition') {
+                                if (typeof that.$route.name != 'undefined') {
+                                    that.$route.name[1] = that.$route.query.position;
+                                    that.$route.name[2] = that.$route.query.name;
+                                }
+                                that.activeIndex = "2";
+                                for (var i = 0; i < that.positionMenu.length; i++) {
+                                    if (that.$route.query.position == that.positionMenu[i].position) {
+                                        that.activeIndex += '-' + (i + 1);
+                                        for (var n = 0; n < that.positionMenu[i].names.length; n++) {
+                                            if (that.$route.query.code == that.positionMenu[i].names[n].code) {
+                                                that.activeIndex += '-' + (n + 1);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (that.$route.path == '/setting/editPassword') {
+                                that.activeIndex = "3-1"
+                            }
+                            if (that.$route.path == '/setting/nodePosition') {
+                                that.activeIndex = "3-2"
+                            }
+                            if (that.$route.path == '/log/adminLog') {
+                                that.activeIndex = "4-1"
+                            }
+                            if (that.$route.path == '/log/signInOutLog') {
+                                that.activeIndex = "4-2"
+                            }
                         } else if (response.data.code == 401 && response.data.message == "authorize_fault") {
-                            alert("没有权限，请先登录")
+                            if (that.$route.path !== '/login') {
+                                that.$router.push('/login')
+                            }
+                            that.$root.displayLogin = true;
+                            that.setCookie("Authorization_usertoken", "");
                         } else {
-                            alert("请稍后再试")
+                            that.$message({
+                                showClose: true,
+                                message: response.data.message,
+                                type: 'warning'
+                            });
+
                         }
                     })
                     .catch(function(error) { // 请求失败处理
-                        //alert("请求超时，请稍后再重新登录")
-                        debugger;
+                        that.$message({
+                            showClose: true,
+                            message: error,
+                            type: 'error'
+                        });
                         console.log(error);
                     });
 
@@ -227,7 +396,15 @@
                 }    
                 return  "";
             },
-
+            setCookie(cname,  cvalue,  exdays)  {    
+                var  cookies  =  cname  +  "="  +  cvalue  +  ";path=/";    
+                if  (exdays)  {        
+                    var  d  =  new  Date();        
+                    d.setTime(d.getTime()  +  (exdays  *  24  *  60  *  60  *  1000));        
+                    cookies  +=  ";expires="  +  d.toGMTString();    
+                }    
+                document.cookie  =  cookies;
+            }
         }
     };
 </script>
