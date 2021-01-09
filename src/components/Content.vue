@@ -65,9 +65,8 @@
     <el-header style="text-align: right; font-size: 12px;height:50px">
         <div class="header-left">
             <i :class="isCollapse?'el-icon-s-unfold':'el-icon-s-fold'" @click="isCollapse=!isCollapse"></i>
-            <!-- <i :class="el-icon-s-unfold"></i> -->
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item v-for="(item,index) in $route.name">{{item}}</el-breadcrumb-item>
+                <el-breadcrumb-item v-for="(item,index) in $route.name" :key="index">{{item}}</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
 
