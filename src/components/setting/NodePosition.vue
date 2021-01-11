@@ -158,7 +158,7 @@
             }
         },
         mounted() {
-            this.Authorization_usertoken = this.getCookie("Authorization_usertoken");
+            this.Authorization_usertoken = this.$root.getCookie("Authorization_usertoken");
             this.positionList();
         },
         methods: {
@@ -186,6 +186,7 @@
                 this.indexList(this.currentPage, this.pageSize);
             },
             changeSwitch(row) {
+                var that = this;
                 var curData = {
                     id: row._id,
                     show: row.show,
@@ -195,7 +196,10 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.updatePosition(curData);
+                    this.updatePosition(curData, function() {
+                        that.getPositionMenu();
+
+                    });
                 }).catch(() => {
                     row.show = !row.show
                     this.$message({
@@ -203,6 +207,84 @@
                         message: '已取消'
                     });
                 });
+
+            },
+            getPositionMenu() {
+                var that = this;
+                this.$axios
+                    .get('/api/Home/AggsPosition', {
+                        headers: {
+                            Authorization: this.Authorization_usertoken
+                        }
+                    })
+                    .then(function(response) {
+                        if (response.data.code == 0 && response.data.message == "success") {
+                            that.$root.positionMenu = response.data.result
+                            for (var i = 0; i < that.$root.positionMenu.length; i++) {
+                                that.$root.indexPositionMenu.push({
+                                    parantIndex: "2-" + (i + 1).toString(),
+                                    childIndexList: []
+                                });
+                                for (var c = 0; c < that.$root.positionMenu[i].names.length; c++) {
+                                    that.$root.indexPositionMenu[i].childIndexList.push({
+                                        index: "2-" + (i + 1).toString() + "-" + (c + 1).toString()
+                                    })
+                                }
+
+                            }
+
+                            if (that.$route.path == '/testPosition') {
+                                if (typeof that.$route.name != 'undefined') {
+                                    that.$route.name[1] = that.$route.query.position;
+                                    that.$route.name[2] = that.$route.query.name;
+                                }
+                                that.$root.activeIndex = "2";
+                                for (var i = 0; i < that.$root.positionMenu.length; i++) {
+                                    if (that.$route.query.position == that.$root.positionMenu[i].position) {
+                                        that.$root.activeIndex += '-' + (i + 1);
+                                        for (var n = 0; n < that.$root.positionMenu[i].names.length; n++) {
+                                            if (that.$route.query.code == that.$root.positionMenu[i].names[n].code) {
+                                                that.$root.activeIndex += '-' + (n + 1);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (that.$route.path == '/setting/editPassword') {
+                                that.$root.activeIndex = "3-1"
+                            }
+                            if (that.$route.path == '/setting/nodePosition') {
+                                that.$root.activeIndex = "3-2"
+                            }
+                            if (that.$route.path == '/log/adminLog') {
+                                that.$root.activeIndex = "4-1"
+                            }
+                            if (that.$route.path == '/log/signInOutLog') {
+                                that.$root.activeIndex = "4-2"
+                            }
+                        } else if (response.data.code == 401 && response.data.message == "authorize_fault") {
+                            if (that.$route.path !== '/login') {
+                                that.$router.push('/login')
+                            }
+                            that.$root.displayLogin = true;
+                            that.$root.setCookie("Authorization_usertoken", "");
+                        } else {
+                            that.$message({
+                                showClose: true,
+                                message: response.data.message,
+                                type: 'warning'
+                            });
+
+                        }
+                    })
+                    .catch(function(error) { // 请求失败处理
+                        that.$message({
+                            showClose: true,
+                            message: error,
+                            type: 'error'
+                        });
+                        console.log(error);
+                    });
 
             },
             searchPosition() {
@@ -237,7 +319,7 @@
                                 that.$router.push('/login')
                             }
                             that.$root.displayLogin = true;
-                            that.setCookie("Authorization_usertoken", "");
+                            that.$root.setCookie("Authorization_usertoken", "");
                         } else {
                             that.$message({
                                 showClose: true,
@@ -279,7 +361,7 @@
                                 that.$router.push('/login')
                             }
                             that.$root.displayLogin = true;
-                            that.setCookie("Authorization_usertoken", "");
+                            that.$root.setCookie("Authorization_usertoken", "");
                         } else {
                             that.$message({
                                 showClose: true,
@@ -351,18 +433,6 @@
                     map.addOverlay(that.maker);
                 });
             },
-            getCookie(cname)  {    
-                var  name  =  cname  +  "=";    
-                var  ca  =  document.cookie.split(';');    
-                for  (var  i  =  0;  i  <  ca.length;  i++)  {        
-                    var  c  =  ca[i].trim();        
-                    if  (c.indexOf(name)  ==  0)  {            
-                        return  c.substring(name.length,  c.length);        
-                    }    
-                }    
-                return  "";
-            },
-
         }
     };
 </script>

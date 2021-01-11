@@ -217,7 +217,7 @@
 
         }),
         mounted() {
-            this.Authorization_usertoken = this.getCookie("Authorization_usertoken");
+            this.Authorization_usertoken = this.$root.getCookie("Authorization_usertoken");
             this.positionList();
             this.indexList();
         },
@@ -313,7 +313,7 @@
                                 that.$router.push('/login')
                             }
                             that.$root.displayLogin = true;
-                            that.setCookie("Authorization_usertoken", "");
+                            that.$root.setCookie("Authorization_usertoken", "");
                         } else {
                             that.$message({
                                 showClose: true,
@@ -335,7 +335,7 @@
             indexList() {
                 var that = this;
                 var param = {
-                    pageSize: 10000
+                    pageSize: 30
                 };
                 this.$axios
                     .get('/api/Home/Index', {
@@ -353,7 +353,7 @@
                                 that.$router.push('/login')
                             }
                             that.$root.displayLogin = true;
-                            that.setCookie("Authorization_usertoken", "");
+                            that.$root.setCookie("Authorization_usertoken", "");
                         } else {
                             that.$message({
                                 showClose: true,
@@ -371,19 +371,7 @@
                         console.log(error);
                     });
 
-            },
-            getCookie(cname)  {    
-                var  name  =  cname  +  "=";    
-                var  ca  =  document.cookie.split(';');    
-                for  (var  i  =  0;  i  <  ca.length;  i++)  {        
-                    var  c  =  ca[i].trim();        
-                    if  (c.indexOf(name)  ==  0)  {            
-                        return  c.substring(name.length,  c.length);        
-                    }    
-                }    
-                return  "";
-            },
-
+            }
         }
     }
 </script>

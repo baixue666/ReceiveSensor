@@ -18,7 +18,32 @@ new Vue({
     router,
     data: function() {
         return {
-            displayLogin: false
+            displayLogin: false,
+            positionMenu: [],
+            indexPositionMenu: [],
+            activeIndex: "1"
+        }
+    },
+    methods: {
+        setCookie(cname, cvalue, exdays) {  
+            var  cookies  =  cname  +  "="  +  cvalue  +  ";path=/";    
+            if  (exdays)  {        
+                var  d  =  new  Date();        
+                d.setTime(d.getTime()  +  (exdays  *  24  *  60  *  60  *  1000));        
+                cookies  +=  ";expires="  +  d.toGMTString();    
+            }    
+            document.cookie  =  cookies;
+        },
+        getCookie(cname) {    
+            var  name  =  cname  +  "=";    
+            var  ca  =  document.cookie.split(';');    
+            for  (var  i  =  0;  i  <  ca.length;  i++)  {        
+                var  c  =  ca[i].trim();        
+                if  (c.indexOf(name)  ==  0)  {            
+                    return  c.substring(name.length,  c.length);        
+                }    
+            }    
+            return  "";
         }
     },
     render: h => h(App)

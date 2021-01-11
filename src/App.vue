@@ -19,7 +19,7 @@
             }
         },
         mounted() {
-            this.Authorization_usertoken = this.getCookie("Authorization_usertoken");
+            this.Authorization_usertoken = this.$root.getCookie("Authorization_usertoken");
             if (this.Authorization_usertoken == "") {
                 this.$root.displayLogin = true;
             } else {
@@ -27,17 +27,7 @@
             }
         },
         methods: {
-            getCookie(cname)  {    
-                var  name  =  cname  +  "=";    
-                var  ca  =  document.cookie.split(';');    
-                for  (var  i  =  0;  i  <  ca.length;  i++)  {        
-                    var  c  =  ca[i].trim();        
-                    if  (c.indexOf(name)  ==  0)  {            
-                        return  c.substring(name.length,  c.length);        
-                    }    
-                }    
-                return  "";
-            }
+
         }
     }
 </script>

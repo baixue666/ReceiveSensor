@@ -3,7 +3,7 @@
         <el-row :gutter="10" class="search-wrap"> 
             <el-col :span="6">
                 <el-date-picker
-                    v-model="search"
+                    v-model="searchValue"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -21,11 +21,11 @@
         <span>{{ scope.row.username }}</span>
       </template>
 </el-table-column>
-<el-table-column label="手机号">
+<!-- <el-table-column label="手机号">
     <template slot-scope="scope">
         <span></span>
       </template>
-</el-table-column>
+</el-table-column> -->
 <el-table-column label="IP">
     <template slot-scope="scope">
         <span>{{ scope.row.ip }}</span>
@@ -67,7 +67,7 @@
     export default {
         data() {
             return {
-                search: "",
+                searchValue: "",
                 Authorization_usertoken: "",
                 logList: [],
                 currentPage: 1,
@@ -77,7 +77,7 @@
             }
         },
         mounted() {
-            this.Authorization_usertoken = this.getCookie("Authorization_usertoken");
+            this.Authorization_usertoken = this.$root.getCookie("Authorization_usertoken");
             this.getLogList();
         },
         methods: {
@@ -93,15 +93,36 @@
                 this.getLogList(this.currentPage, this.pageSize);
             },
             searchLog() {
-                this.getLogList(1, 10, this.search);
+                var that = this;
+                if (this.searchValue == "" || this.searchValue == null || this.searchValue.length == 0) {
+                    this.pageSize = 10;
+                    this.getLogList(this.currentPage, this.pageSize)
+                } else {
+                    var startLocalYear = new Date(this.searchValue[0]).getFullYear();
+                    var startLocalMonth = new Date(this.searchValue[0]).getMonth() + 1;
+                    var startLocalDate = new Date(this.searchValue[0]).getDate();
+                    var startLocal = startLocalYear + "-" + startLocalMonth + "-" + startLocalDate;
+
+                    var endLocalYear = new Date(this.searchValue[1]).getFullYear();
+                    var endLocalMonth = new Date(this.searchValue[1]).getMonth() + 1;
+                    var endLocalDate = new Date(this.searchValue[1]).getDate();
+                    var endLocal = endLocalYear + "-" + endLocalMonth + "-" + endLocalDate;
+                    this.currentPage = 1;
+                    this.getLogList(this.currentPage, this.pageSize, startLocal, endLocal)
+                }
             },
-            getLogList(pageIndex, pageSize, searchValue) {
+            getLogList(pageIndex, pageSize, startDate, endDate) {
                 var that = this;
                 var param = {
+                    type: "operation",
                     pageIndex: pageIndex || 1,
                     pageSize: pageSize || 10,
-                    content: searchValue || ""
+
                 };
+                if (typeof startDate != "undefined" && typeof endDate != "undefined") {
+                    param.start_time = startDate;
+                    param.end_time = endDate;
+                }
                 this.$axios
                     .get('/api/Home/LogList', {
                         params: param,
@@ -119,7 +140,7 @@
                                 that.$router.push('/login')
                             }
                             that.$root.displayLogin = true;
-                            that.setCookie("Authorization_usertoken", "");
+                            that.$root.setCookie("Authorization_usertoken", "");
                         } else {
                             that.$message({
                                 showClose: true,
@@ -137,20 +158,7 @@
                         console.log(error);
                     });
 
-            },
-            getCookie(cname)  {    
-                var  name  =  cname  +  "=";    
-                var  ca  =  document.cookie.split(';');    
-                for  (var  i  =  0;  i  <  ca.length;  i++)  {        
-                    var  c  =  ca[i].trim();        
-                    if  (c.indexOf(name)  ==  0)  {            
-                        return  c.substring(name.length,  c.length);        
-                    }    
-                }    
-                return  "";
-            },
-
-
+            }
         }
     };
 </script>

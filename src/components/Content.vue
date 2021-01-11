@@ -2,7 +2,7 @@
 <el-container style="height: 100vh;">
   
     <el-menu
-      :default-active="activeIndex"
+      :default-active="$root.activeIndex"
       class="aside-menu"
       ref="asideMenu"
       @open="handleOpen"
@@ -22,39 +22,45 @@
           <i class="el-icon-office-building"></i>
           <span>中国铁道科学研究院铁道建筑研究所</span>
         </template>
-<el-submenu :index="indexPositionMenu[index].parantIndex" class="aside-submenu" v-for="(item,index) in positionMenu" :key="index">
+<el-submenu :index="$root.indexPositionMenu[index].parantIndex" class="aside-submenu" v-for="(item,index) in $root.positionMenu" :key="index">
     <template slot="title">{{item.position}}</template>
     <!-- <span slot="title">{{item.position}}</span> -->
-    <el-menu-item :index="indexPositionMenu[index].childIndexList[InnerIndex].index" v-for="(innerItem,InnerIndex) in item.names" :key="InnerIndex" @click="changePath('testPosition',innerItem.code,innerItem.name,item.position)">
-        {{innerItem.name}}
+    <!-- <el-menu-item-group class="aside-submenu" v-for="(innerItem,InnerIndex) in item.names" v-if="item.names.length>0">
+        <el-menu-item :index="$root.indexPositionMenu[index].childIndexList[InnerIndex].index" v-if="innerItem.show" v-for="(innerItem,InnerIndex) in item.names" :key="InnerIndex" @click="changePath('testPosition',innerItem.code,innerItem.name,item.position)">
+            <span>{{innerItem.name}}</span>
+        </el-menu-item>
+    </el-menu-item-group> -->
+
+    <el-menu-item :index="$root.indexPositionMenu[index].childIndexList[InnerIndex].index" v-if="innerItem.show" v-for="(innerItem,InnerIndex) in item.names" :key="InnerIndex" @click="changePath('testPosition',innerItem.code,innerItem.name,item.position)">
+        <span slot="title">{{innerItem.name}}</span>
     </el-menu-item>
 </el-submenu>
 </el-submenu>
 <el-submenu index="3">
     <template slot="title" class="aside-submenu"> 
                 <i class="el-icon-setting"></i>
-                <span>设置</span>
+                <span slot="title">设置</span>
               </template>
     <el-menu-item-group class="aside-submenu">
         <el-menu-item index="3-1" @click="changePath('editPassword')">
-            <span>修改密码</span>
+            <span slot="title">修改密码</span>
         </el-menu-item>
         <el-menu-item index="3-2" @click="changePath('nodePosition')">
-            <span>节点位置</span>
+            <span slot="title">节点位置</span>
         </el-menu-item>
     </el-menu-item-group>
 </el-submenu>
 <el-submenu index="4">
     <template slot="title" class="aside-submenu"> 
                 <i class="el-icon-tickets"></i>
-                <span>日志管理</span>
+                <span slot="title">日志管理</span>
               </template>
     <el-menu-item-group class="aside-submenu">
         <el-menu-item index="4-1" @click="changePath('adminLog')">
-            <span>管理员日志</span>
+            <span slot="title">管理员日志</span>
         </el-menu-item>
         <el-menu-item index="4-2" @click="changePath('signInOutLog')">
-            <span>登陆登出日志</span>
+            <span slot="title">登陆登出日志</span>
         </el-menu-item>
     </el-menu-item-group>
 </el-submenu>
@@ -116,18 +122,18 @@
     .el-menu {
         width: 210px;
         height: 100%;
-        overflow: hidden;
-        overflow-y: auto;
-        transition: .1s;
+        /* overflow: hidden; */
+        /* overflow-y: auto; */
+        transition: .2s;
     }
     
     .el-menu.el-menu--collapse {
         width: 64px;
-        transition: .1s;
+        transition: .2s;
     }
     
     .el-menu .el-menu {
-        overflow: hidden;
+        overflow-y: hidden;
     }
     
     .aside-submenu,
@@ -202,6 +208,14 @@
         font-size: 20px;
         cursor: pointer;
     }
+    
+    .el-menu-item-group__title {
+        padding: 0 5px;
+    }
+    
+    .el-menu--vertical {
+        margin-left: 10px;
+    }
 </style>
 
 <script>
@@ -216,7 +230,7 @@
             }
         },
         mounted() {
-            this.Authorization_usertoken = this.getCookie("Authorization_usertoken");
+            this.Authorization_usertoken = this.$root.getCookie("Authorization_usertoken");
             this.indexPositionMenu = [];
             this.getPositionMenu();
         },
@@ -231,7 +245,6 @@
                         //this.$refs.asideMenu.width = "210px!important";
                         //this.$refs.asideMenu.$el.style.width = "210px!important";
                     }
-
                 },
                 deep: true
             }
@@ -296,7 +309,7 @@
                 if (command == "logout") {
                     this.$router.push('/login')
                     this.$root.displayLogin = true;
-                    this.setCookie("Authorization_usertoken", "");
+                    this.$root.setCookie("Authorization_usertoken", "");
                 }
             },
             handleOpen(key, keyPath) {
@@ -316,14 +329,14 @@
                     })
                     .then(function(response) {
                         if (response.data.code == 0 && response.data.message == "success") {
-                            that.positionMenu = response.data.result
-                            for (var i = 0; i < that.positionMenu.length; i++) {
-                                that.indexPositionMenu.push({
+                            that.$root.positionMenu = response.data.result
+                            for (var i = 0; i < that.$root.positionMenu.length; i++) {
+                                that.$root.indexPositionMenu.push({
                                     parantIndex: "2-" + (i + 1).toString(),
                                     childIndexList: []
                                 });
-                                for (var c = 0; c < that.positionMenu[i].names.length; c++) {
-                                    that.indexPositionMenu[i].childIndexList.push({
+                                for (var c = 0; c < that.$root.positionMenu[i].names.length; c++) {
+                                    that.$root.indexPositionMenu[i].childIndexList.push({
                                         index: "2-" + (i + 1).toString() + "-" + (c + 1).toString()
                                     })
                                 }
@@ -335,36 +348,36 @@
                                     that.$route.name[1] = that.$route.query.position;
                                     that.$route.name[2] = that.$route.query.name;
                                 }
-                                that.activeIndex = "2";
-                                for (var i = 0; i < that.positionMenu.length; i++) {
-                                    if (that.$route.query.position == that.positionMenu[i].position) {
-                                        that.activeIndex += '-' + (i + 1);
-                                        for (var n = 0; n < that.positionMenu[i].names.length; n++) {
-                                            if (that.$route.query.code == that.positionMenu[i].names[n].code) {
-                                                that.activeIndex += '-' + (n + 1);
+                                that.$root.activeIndex = "2";
+                                for (var i = 0; i < that.$root.positionMenu.length; i++) {
+                                    if (that.$route.query.position == that.$root.positionMenu[i].position) {
+                                        that.$root.activeIndex += '-' + (i + 1);
+                                        for (var n = 0; n < that.$root.positionMenu[i].names.length; n++) {
+                                            if (that.$route.query.code == that.$root.positionMenu[i].names[n].code) {
+                                                that.$root.activeIndex += '-' + (n + 1);
                                             }
                                         }
                                     }
                                 }
                             }
                             if (that.$route.path == '/setting/editPassword') {
-                                that.activeIndex = "3-1"
+                                that.$root.activeIndex = "3-1"
                             }
                             if (that.$route.path == '/setting/nodePosition') {
-                                that.activeIndex = "3-2"
+                                that.$root.activeIndex = "3-2"
                             }
                             if (that.$route.path == '/log/adminLog') {
-                                that.activeIndex = "4-1"
+                                that.$root.activeIndex = "4-1"
                             }
                             if (that.$route.path == '/log/signInOutLog') {
-                                that.activeIndex = "4-2"
+                                that.$root.activeIndex = "4-2"
                             }
                         } else if (response.data.code == 401 && response.data.message == "authorize_fault") {
                             if (that.$route.path !== '/login') {
                                 that.$router.push('/login')
                             }
                             that.$root.displayLogin = true;
-                            that.setCookie("Authorization_usertoken", "");
+                            that.$root.setCookie("Authorization_usertoken", "");
                         } else {
                             that.$message({
                                 showClose: true,
@@ -383,26 +396,6 @@
                         console.log(error);
                     });
 
-            },
-            getCookie(cname)  {    
-                var  name  =  cname  +  "=";    
-                var  ca  =  document.cookie.split(';');    
-                for  (var  i  =  0;  i  <  ca.length;  i++)  {        
-                    var  c  =  ca[i].trim();        
-                    if  (c.indexOf(name)  ==  0)  {            
-                        return  c.substring(name.length,  c.length);        
-                    }    
-                }    
-                return  "";
-            },
-            setCookie(cname,  cvalue,  exdays)  {    
-                var  cookies  =  cname  +  "="  +  cvalue  +  ";path=/";    
-                if  (exdays)  {        
-                    var  d  =  new  Date();        
-                    d.setTime(d.getTime()  +  (exdays  *  24  *  60  *  60  *  1000));        
-                    cookies  +=  ";expires="  +  d.toGMTString();    
-                }    
-                document.cookie  =  cookies;
             }
         }
     };

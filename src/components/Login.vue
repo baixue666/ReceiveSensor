@@ -134,7 +134,7 @@
                     .then(function(response) {
                         if (response.data.code == 0 && response.data.message == "success") {
                             that.userToken = response.data.result
-                            that.setCookie("Authorization_usertoken", that.userToken);
+                            that.$root.setCookie("Authorization_usertoken", that.userToken);
                             that.$root.displayLogin = false;
                             that.$router.push('/home')
                         } else {
@@ -165,15 +165,6 @@
                         return false;
                     }
                 });
-            },
-            setCookie(cname,  cvalue,  exdays)  {    
-                var  cookies  =  cname  +  "="  +  cvalue  +  ";path=/";    
-                if  (exdays)  {        
-                    var  d  =  new  Date();        
-                    d.setTime(d.getTime()  +  (exdays  *  24  *  60  *  60  *  1000));        
-                    cookies  +=  ";expires="  +  d.toGMTString();    
-                }    
-                document.cookie  =  cookies;
             }
         }
     }
