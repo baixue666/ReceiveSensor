@@ -50,10 +50,17 @@
             <div style="overflow: hidden;">
               <ul  class="item">
                 <li class="flex" v-for="(item,index) in indexData" :key=index>
-                  <span>{{item.create_time}}</span> 
-                  <span >{{item.position}}</span> 
-                  <span >{{item.name}}</span> 
-                  <span >{{item.alarm_information}}</span>
+                  <span v-if="item.create_time==''">未知</span> 
+                  <span v-else>{{item.create_time}}</span> 
+
+                  <span v-if="item.position==''">未知</span> 
+                  <span v-else>{{item.position}}</span>
+
+                  <span v-if="item.name==''">未知</span>
+                  <span v-else>{{item.name}}</span> 
+
+                  <span v-if="item.alarm_information==''">未知</span>
+                  <span v-else>{{item.alarm_information}}</span>
                 </li>
               </ul>
             </div>
@@ -374,4 +381,5 @@
             }
         }
     }
+</script>
 </script>

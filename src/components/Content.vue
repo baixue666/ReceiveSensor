@@ -23,7 +23,8 @@
           <span>中国铁道科学研究院铁道建筑研究所</span>
         </template>
 <el-submenu :index="$root.indexPositionMenu[index].parantIndex" class="aside-submenu" v-for="(item,index) in $root.positionMenu" :key="index">
-    <template slot="title">{{item.position}}</template>
+    <template slot="title" v-if="item.position==''">未知</template>
+    <template slot="title" v-else>{{item.position}}</template>
     <!-- <span slot="title">{{item.position}}</span> -->
     <!-- <el-menu-item-group class="aside-submenu" v-for="(innerItem,InnerIndex) in item.names" v-if="item.names.length>0">
         <el-menu-item :index="$root.indexPositionMenu[index].childIndexList[InnerIndex].index" v-if="innerItem.show" v-for="(innerItem,InnerIndex) in item.names" :key="InnerIndex" @click="changePath('testPosition',innerItem.code,innerItem.name,item.position)">
@@ -32,7 +33,10 @@
     </el-menu-item-group> -->
 
     <el-menu-item :index="$root.indexPositionMenu[index].childIndexList[InnerIndex].index" v-if="innerItem.show" v-for="(innerItem,InnerIndex) in item.names" :key="InnerIndex" @click="changePath('testPosition',innerItem.code,innerItem.name,item.position)">
-        <span slot="title">{{innerItem.name}}</span>
+        <!-- <span slot="title">{{innerItem.name}}</span> -->
+
+        <span slot="title" v-if="innerItem.name==''">未知</span>
+        <span slot="title" v-else>{{innerItem.name}}</span>
     </el-menu-item>
 </el-submenu>
 </el-submenu>
@@ -252,6 +256,7 @@
         },
         methods: {
             changePath(path, code, name, position) {
+                debugger;
                 if (path == 'home') {
                     if (this.$route.path !== '/home') {
                         this.$router.push('/home')

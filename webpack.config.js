@@ -56,13 +56,13 @@ module.exports = (options = {}) => ({
         extensions: ['.js', '.vue', '.json', '.css']
     },
     devServer: {
-        host: "http://123.57.128.147", //端口号
-        //host: "localhost",
+        //host: "http://123.57.128.147", //端口号
+        host: "localhost",
         port: 8010,
         proxy: {
             '/api/': {
-                //target: 'http://localhost/ReceiveSensorData.Web',
-                target: 'http://123.57.128.147/sensor',
+                target: 'http://localhost/ReceiveSensorData.Web',
+                //target: 'http://123.57.128.147/sensor',
                 changeOrigin: true,
                 pathRewrite: {
                     '^/api': ''
