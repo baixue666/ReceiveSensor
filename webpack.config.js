@@ -56,11 +56,13 @@ module.exports = (options = {}) => ({
         extensions: ['.js', '.vue', '.json', '.css']
     },
     devServer: {
-        host: "localhost", //端口号
+        host: "http://123.57.128.147", //端口号
+        //host: "localhost",
         port: 8010,
         proxy: {
             '/api/': {
-                target: 'http://localhost/ReceiveSensorData.Web',
+                //target: 'http://localhost/ReceiveSensorData.Web',
+                target: 'http://123.57.128.147/sensor',
                 changeOrigin: true,
                 pathRewrite: {
                     '^/api': ''
@@ -70,20 +72,6 @@ module.exports = (options = {}) => ({
         historyApiFallback: {
             index: url.parse(options.dev ? '/assets/' : publicPath).pathname
         }
-        // host: '127.0.0.1',
-        // port: 8010,
-        // proxy: {
-        //     '/api/': {
-        //         target: 'http://127.0.0.1:8080',
-        //         changeOrigin: true,
-        //         pathRewrite: {
-        //             '^/api': ''
-        //         }
-        //     }
-        // },
-        // historyApiFallback: {
-        //     index: url.parse(options.dev ? '/assets/' : publicPath).pathname
-        // }
     },
     devtool: options.dev ? '#eval-source-map' : '#source-map'
 })
