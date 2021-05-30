@@ -256,7 +256,6 @@
         },
         methods: {
             changePath(path, code, name, position) {
-                debugger;
                 if (path == 'home') {
                     if (this.$route.path !== '/home') {
                         this.$router.push('/home')

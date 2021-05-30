@@ -312,8 +312,12 @@
                 var param = {
                     pageIndex: pageIndex,
                     pageSize: pageSize,
-                    position: this.$route.query.position,
-                    code: this.$route.query.code,
+                    //position: this.$route.query.position,
+                    //position: "BEZ",
+                    //code: this.$route.query.code,
+                    //code: "pantry",
+
+
                 };
                 if (typeof startDate != "undefined" && typeof endDate != "undefined") {
                     param.start_time = startDate;
